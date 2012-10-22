@@ -1,12 +1,16 @@
 Small library for validating hal+json
 
 Usage with bundler
-    gem 'halidator'
+```
+gem 'halidator'
+```
 
 Usage stand-alone
-    gem install halidator
-and
-    'require halidator'
+```
+gem install halidator
+irb
+require 'halidator'
+```
 
 
 
@@ -14,6 +18,7 @@ A tiny example
 
 ```Ruby
 require 'halidator'
+require 'open-uri'
 
 puts "Halidator will try and validate a string, if that's what you give it"
 string = open("http://haltalk.herokuapp.com/users/mike/posts.json").read
