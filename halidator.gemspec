@@ -7,5 +7,7 @@ Gem::Specification.new do |s|
   s.authors     = ["Bob Larrick"]
   s.email       = 'larrick@gmail.com'
   s.files       = ["lib/halidator.rb"]
+  s.executables = ['bin/halidate']
+  s.require_path = ['lib']
   s.homepage    = "https://github.com/deathbob/halidator"
 end

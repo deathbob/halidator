@@ -1,0 +1,16 @@
+Small library for validating hal+json
+
+Usage:
+   gem 'halidator'
+
+or
+   'require halidator'
+
+string = open("http://example.com/hal_endpoint.json").read
+
+json = JSON.parse(string)
+
+
+Halidator.new(string).valid?
+or
+Halidator.new(json).valid?
