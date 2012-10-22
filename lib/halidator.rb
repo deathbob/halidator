@@ -48,11 +48,11 @@ class Halidator
       puts "    #{link}"
     end
     unless link['href']
-      @errors << "no href in #{link}"
+      errors << "no href in #{link}"
       return false
     end
     unless template_valid?(link)
-      @errors << "invalid template for #{link}"
+      errors << "invalid template for #{link}"
       return false
     end
     true
@@ -79,7 +79,6 @@ class Halidator
   def embedded_valid?
     return true if _embedded.nil?
 
-    # force embedded to always be an array of objects, and iterate over resource in that array
     _embedded.all? do |resource_type, resource|
       case resource
       when Array
@@ -90,15 +89,13 @@ class Halidator
     end
   end
 
-
-
   def meets_minimal_JSON_representation?
-    has_links && links_has_self && links_self_has_href
+    has_links && links_has_self && self_has_href
   end
 
   def show_errors
     if $DEBUG
-      puts "\nERRORS", "---------------", @errors.inspect
+      puts "\nERRORS", "---------------", errors.inspect
     end
   end
 
@@ -114,7 +111,7 @@ class Halidator
     if _links
       true
     else
-      @errors << '_links does not exist'
+      errors << '_links does not exist'
       false
     end
   end
@@ -123,16 +120,16 @@ class Halidator
     if _links['self']
       true
     else
-      @errors << "no self in #{_links.inspect}"
+      errors << "no self in #{_links.inspect}"
       false
     end
   end
 
-  def links_self_has_href
+  def self_has_href
     if _links['self']['href']
       true
     else
-      @errors << "no href in #{_links['self']}"
+      errors << "no href in #{_links['self']}"
       false
     end
   end

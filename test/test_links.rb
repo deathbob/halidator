@@ -1,7 +1,7 @@
 require 'test/unit'
 require 'debugger'
 
-require './halidator'
+require_relative '../lib/halidator'
 class HalidatorTest < Test::Unit::TestCase
 
   def valid_json
