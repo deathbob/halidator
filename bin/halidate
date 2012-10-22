@@ -5,4 +5,10 @@ require_relative '../lib/halidator'
 input = ARGF.read
 
 hal = Halidator.new(input)
-$stdout.puts hal.valid?
+res = hal.valid?
+if true == res
+  $stdout.puts "true"
+else
+  $stdout.puts 'false'
+  $stderr.puts hal.errors
+end
