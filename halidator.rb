@@ -30,15 +30,15 @@ class Halidator
   def embedded_valid?
     return true if _embedded.nil?
 
-    # embedded is always an array of objects, so iterate over each array inside _embedded
-    _embedded.all? do |resource_type, array_of_resources|
+    # force embedded to always be an array of objects, and iterate over resource in that array
+    Array(_embedded).all? do |resource_type, array_of_resources|
       array_of_resources.all?{|x| Halidator.new(x).valid?}
     end
   end
 
   def links_all_valid?(links)
     links.all? do |k, v|
-      puts "\n\n", k, v
+#      puts "\n\n", k, v
       case v
       when Array # is an array of links
         v.all?{|x| link_valid?(x)}
@@ -49,7 +49,7 @@ class Halidator
   end
 
   def link_valid?(link)
-    puts "  #{link}"
+#    puts "  #{link}"
     link['href'] && template_valid?(link)
   end
 
