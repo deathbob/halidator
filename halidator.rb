@@ -14,7 +14,9 @@ class Halidator
   end
 
   def valid?
-    parse_json && validate_json_as_hal
+    result = parse_json && validate_json_as_hal
+    show_errors
+    result
   end
 
   def parse_json
@@ -24,21 +26,14 @@ class Halidator
   end
 
   def validate_json_as_hal
-    meets_minimal_JSON_representation? && links_all_valid?(_links) && embedded_valid?
+    meets_minimal_JSON_representation? && links_all_valid? && embedded_valid?
   end
 
-  def embedded_valid?
-    return true if _embedded.nil?
-
-    # force embedded to always be an array of objects, and iterate over resource in that array
-    Array(_embedded).all? do |resource_type, array_of_resources|
-      array_of_resources.all?{|x| Halidator.new(x).valid?}
-    end
-  end
-
-  def links_all_valid?(links)
-    links.all? do |k, v|
-#      puts "\n\n", k, v
+  def links_all_valid?
+    _links.all? do |k, v|
+      if $DEBUG
+        puts "\n\n", k, v
+      end
       case v
       when Array # is an array of links
         v.all?{|x| link_valid?(x)}
@@ -49,45 +44,63 @@ class Halidator
   end
 
   def link_valid?(link)
-#    puts "  #{link}"
-    link['href'] && template_valid?(link)
+    if $DEBUG
+      puts "    #{link}"
+    end
+    unless link['href']
+      @errors << "no href in #{link}"
+      return false
+    end
+    unless template_valid?(link)
+      @errors << "invalid template for #{link}"
+      return false
+    end
+    true
   end
 
   def template_valid?(link)
     return true unless link['templated'] == true
 
     pairs = 0
-    link['href'].each_char.all? do |c|
+    res = link['href'].each_char.all? do |c|
       if '{' == c
         pairs += 1
-        [0, 1].include?(pairs)
+        pairs == 1
       elsif '}' == c
         pairs -= 1
-        [0, 1].include?(pairs)
+        pairs == 0
       else
         true
+      end
+    end
+    res && (pairs == 0) && link['href'].include?('{')
+  end
+
+  def embedded_valid?
+    return true if _embedded.nil?
+
+    # force embedded to always be an array of objects, and iterate over resource in that array
+    _embedded.all? do |resource_type, resource|
+      case resource
+      when Array
+        resource.all?{|x| Halidator.new(x).valid?}
+      else
+        Halidator.new(resource).valid?
       end
     end
   end
 
 
-  def meets_minimal_JSON_representation?
-    unless _links
-      @errors << '_links does not exist'
-      return
-    end
-    unless self_or_curie(_links)
-      @errors << 'no self (or curie) in links'
-      return
-    end
-    unless self_href(self_or_curie(_links))
-      @errors << 'no href in self_or_curie'
-      return
-    end
 
-    @errors.empty?
+  def meets_minimal_JSON_representation?
+    has_links && links_has_self && links_self_has_href
   end
 
+  def show_errors
+    if $DEBUG
+      puts "\nERRORS", "---------------", @errors.inspect
+    end
+  end
 
   def _embedded
     @json['_embedded']
@@ -97,12 +110,31 @@ class Halidator
     @json['_links']
   end
 
-  def self_or_curie(hash)
-    hash['self'] || hash['curie']
+  def has_links
+    if _links
+      true
+    else
+      @errors << '_links does not exist'
+      false
+    end
   end
 
-  def self_href(hash)
-    hash['href']
+  def links_has_self
+    if _links['self']
+      true
+    else
+      @errors << "no self in #{_links.inspect}"
+      false
+    end
+  end
+
+  def links_self_has_href
+    if _links['self']['href']
+      true
+    else
+      @errors << "no href in #{_links['self']}"
+      false
+    end
   end
 
 end
