@@ -95,7 +95,7 @@ class Halidator
 
   def show_errors
     if $DEBUG
-      puts "\nERRORS", "---------------", errors.inspect
+      puts "\n---------------", "ERRORS", errors.inspect, "---------------"
     end
   end
 
