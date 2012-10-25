@@ -81,3 +81,7 @@ Thanks to:
 
  * Steve Klabnik for bringing hypermedia APIs to my attention
  * Everybody at http://groups.google.com/group/hal-discuss
+
+---
+
+Pull requests welcome, especially if you're adding XML support!
