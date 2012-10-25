@@ -2,7 +2,7 @@ require 'test/unit'
 require 'debugger'
 
 require_relative '../lib/halidator'
-class HalidatorTest < Test::Unit::TestCase
+class LinksTest < Test::Unit::TestCase
 
   def valid_json
     { '_links' => {'self' => {'href' => "/asdf/foo"} } }

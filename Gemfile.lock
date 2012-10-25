@@ -2,9 +2,11 @@ GEM
   remote: https://rubygems.org/
   specs:
     json (1.7.5)
+    json-schema (1.0.10)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   json
+  json-schema

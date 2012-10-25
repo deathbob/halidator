@@ -1,10 +1,23 @@
 #! /usr/bin/env ruby
-
+require 'optparse'
 require_relative '../lib/halidator'
+
+options = {}
+OptionParser.new do |o|
+  o.on('-j', '--json-schema', "Validate using the HAL JSON schema") { |b| options[:json_schema] = true }
+  o.on('-h', '--help', 'Output this help and exit') { puts o; exit }
+  o.on('-d', '--debug', "Output debugging info") {$DEBUG = true}
+  o.parse!
+end
 
 input = ARGF.read
 
-hal = Halidator.new(input)
+if options[:json_schema]
+  hal = Halidator.new(input, :json_schema)
+else
+  hal = Halidator.new(input)
+end
+
 res = hal.valid?
 if true == res
   $stdout.puts "true"

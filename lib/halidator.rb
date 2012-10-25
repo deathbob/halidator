@@ -1,137 +1,45 @@
 require 'json'
+require_relative './halidate/pure_ruby'
+require_relative './halidate/json_schema'
 
 class Halidator
   attr_accessor :errors
-  def initialize(hal)
+  def initialize(hal, engine = :pure_ruby)
     case hal
     when String
       @json_string = hal
+      parse_json
     else
       @json = hal
     end
-
     @errors = []
+    if engine == :json_schema
+      extend Halidate::JsonSchema
+    else
+      extend Halidate::PureRuby
+    end
+  end
+
+  def parse_json
+    @json = JSON.parse(@json_string)
   end
 
   def valid?
-    result = parse_json && validate_json_as_hal
+    result = validate_json_as_hal
     show_errors
     result
   end
 
-  def parse_json
-    return true if @json
-
-    @json = JSON.parse(@json_string)
-  end
-
-  def validate_json_as_hal
-    meets_minimal_JSON_representation? && links_all_valid? && embedded_valid?
-  end
-
-  def links_all_valid?
-    _links.all? do |k, v|
-      if $DEBUG
-        puts "\n\n", k, v
-      end
-      case v
-      when Array # is an array of links
-        v.all?{|x| link_valid?(x)}
-      else
-        link_valid?(v)
-      end
-    end
-  end
-
-  def link_valid?(link)
+  def debug(*str)
     if $DEBUG
-      puts "    #{link}"
+      $stderr.puts str
     end
-    unless link['href']
-      errors << "no href in #{link}"
-      return false
-    end
-    unless template_valid?(link)
-      errors << "invalid template for #{link}"
-      return false
-    end
-    true
-  end
-
-  def template_valid?(link)
-    return true unless link['templated'] == true
-
-    pairs = 0
-    res = link['href'].each_char.all? do |c|
-      if '{' == c
-        pairs += 1
-        pairs == 1
-      elsif '}' == c
-        pairs -= 1
-        pairs == 0
-      else
-        true
-      end
-    end
-    res && (pairs == 0) && link['href'].include?('{')
-  end
-
-  def embedded_valid?
-    return true if _embedded.nil?
-
-    _embedded.all? do |resource_type, resource|
-      case resource
-      when Array
-        resource.all?{|x| Halidator.new(x).valid?}
-      else
-        Halidator.new(resource).valid?
-      end
-    end
-  end
-
-  def meets_minimal_JSON_representation?
-    has_links && links_has_self && self_has_href
   end
 
   def show_errors
-    if $DEBUG
-      puts "\n---------------", "ERRORS", errors.inspect, "---------------"
-    end
-  end
-
-  def _embedded
-    @json['_embedded']
-  end
-
-  def _links
-    @json['_links']
-  end
-
-  def has_links
-    if _links
-      true
-    else
-      errors << '_links does not exist'
-      false
-    end
-  end
-
-  def links_has_self
-    if _links['self']
-      true
-    else
-      errors << "no self in #{_links.inspect}"
-      false
-    end
-  end
-
-  def self_has_href
-    if _links['self']['href']
-      true
-    else
-      errors << "no href in #{_links['self']}"
-      false
-    end
+    debug ["\nERRORS-VVVVVVVVVVVVVVVVVV",
+           *errors,
+           "ERRORS-^^^^^^^^^^^^^^^^^^"]
   end
 
 end
