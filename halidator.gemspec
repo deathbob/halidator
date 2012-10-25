@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'halidator'
-  s.version     = '0.4.1'
+  s.version     = '0.5.0'
   s.date        = Date.today
   s.summary     = "A small library to validate hal+json"
   s.description = "A small library to validate hal+json"

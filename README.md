@@ -80,4 +80,4 @@ false
 Thanks to:
 
  * Steve Klabnik for bringing hypermedia APIs to my attention
- * Everybody at groups.google.com/group/hal-discuss
+ * Everybody at http://groups.google.com/group/hal-discuss

@@ -1,5 +1,3 @@
-require 'open-uri'
-require 'json'
 require 'json-schema'
 
 module Halidate
@@ -9,9 +7,12 @@ module Halidate
       @errors.empty?
     end
 
+    def  hal_json_schema_file
+      File.dirname(__FILE__) + "/hal.json"
+    end
+
     def schema
-      hal_json_schema_file = File.dirname(__FILE__) + "/hal.json"
-      @schema ||= open(hal_json_schema_file){|f| JSON.parse(f.read)}
+      @schema ||= File.open(hal_json_schema_file){|f| JSON.parse(f.read)}
     end
   end
 end

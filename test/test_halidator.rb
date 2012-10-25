@@ -1,5 +1,6 @@
 require 'test/unit'
 require 'open-uri'
+require 'debugger'
 require_relative './json_strings'
 require_relative '../lib/halidator'
 
@@ -12,7 +13,7 @@ class HalidatorTest < Test::Unit::TestCase
   def test_invalid_haltalk_users
     hal = Halidator.new(JsonStrings.invalid_haltalk_users)
     assert false == hal.valid?
-    puts hal.errors
+    assert hal.errors.join.match /no self in/im
   end
 
   def test_haltalk_users_posts
