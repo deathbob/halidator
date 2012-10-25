@@ -34,6 +34,7 @@ The default validator is a pure ruby implementation that is slightly more strict
 (Specifically, the default validator requires you to have a self link.  This is not technically part of the spec, because everybody wants HAL to be usable as a response to non-GET requests)
 
 You can use a json-schema validator https://github.com/DaveJS/dave.schema.json/blob/master/hal.json by passing an optional argument.
+Many thanks to Isaac from the hal-discuss google group for providing this very comprehensive alternate validator for HAL.
 
 ```Ruby
 puts "Valid = #{Halidator.new(string, :json_schema).valid?}"
@@ -77,5 +78,6 @@ false
 ---
 
 Thanks to:
-  Steve Klabnik for bringing hypermedia APIs to my attention
-  Everybody at groups.google.com/group/hal-discuss
+
+ * Steve Klabnik for bringing hypermedia APIs to my attention
+ * Everybody at groups.google.com/group/hal-discuss
