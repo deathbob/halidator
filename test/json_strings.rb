@@ -26,5 +26,9 @@ class JsonStrings
 json
     end
 
+    def bad_embedded_string
+%[{"_links":{"self":{"href":"/users"}},"_embedded":{"hd:foo":"some random string"}}]
+    end
+
   end
 end

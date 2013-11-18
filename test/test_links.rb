@@ -1,5 +1,4 @@
 require 'test/unit'
-require 'debugger'
 
 require_relative '../lib/halidator'
 class LinksTest < Test::Unit::TestCase

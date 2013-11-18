@@ -1,6 +1,5 @@
 require 'test/unit'
 require 'open-uri'
-require 'debugger'
 require_relative './json_strings'
 require_relative '../lib/halidator'
 
@@ -29,5 +28,11 @@ class HalidatorTest < Test::Unit::TestCase
   def test_dtime_root
     hal = Halidator.new(JsonStrings.dtime_root)
     assert true == hal.valid?
+  end
+
+  def test_bad_embedded_string
+    hal = Halidator.new(JsonStrings.bad_embedded_string)
+    assert false == hal.valid?
+    puts hal.errors
   end
 end

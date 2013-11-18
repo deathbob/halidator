@@ -57,7 +57,12 @@ module Halidate
         when Array
           resource.all?{|x| Halidator.new(x).valid?}
         else
-          Halidator.new(resource).valid?
+          begin
+            Halidator.new(resource).valid?
+          rescue JSON::ParserError
+            errors << "'#{resource}' is not a valid embedded object"
+            return false
+          end
         end
       end
     end
