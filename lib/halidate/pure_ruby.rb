@@ -55,10 +55,18 @@ module Halidate
       _embedded.all? do |resource_type, resource|
         case resource
         when Array
-          resource.all?{|x| Halidator.new(x).valid?}
+          resource.all? do |x|
+            hal = Halidator.new(x)
+            unless hal.valid?
+              errors += hal.errors
+            end
+          end
         else
           begin
-            Halidator.new(resource).valid?
+            hal = Halidator.new(resource)
+            unless hal.valid?
+              errors += hal.errors
+            end
           rescue JSON::ParserError
             errors << "'#{resource}' is not a valid embedded object"
             return false
